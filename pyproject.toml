@@ -1,0 +1,28 @@
+[project]
+name = "llmreq"
+version = "0.1.0"
+description = "API Key Management Backend for LiteLLM"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "httpx",
+    "sqlalchemy",
+    "pydantic",
+    "pydantic-settings",
+    "alembic",
+    "python-multipart",
+    "sqlmodel"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-asyncio"
+]
+
+[tool.pytest.ini_options]
+addopts = "--cov=app --cov-report=term-missing"
+testpaths = ["tests"]
+pythonpath = "."

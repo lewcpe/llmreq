@@ -1,0 +1,19 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - LITELLM_MASTER_KEY=sk-1234
+      - LITELLM_API_URL=http://litellm:4000
+      - LLMREQ_DATABASE_URL=sqlite:///./app.db
+    depends_on:
+      - litellm
+
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./litellm_config.yaml:/app/config.yaml
+    command: [ "--config", "/app/config.yaml", "--port", "4000", "--master_key", "sk-1234" ]
