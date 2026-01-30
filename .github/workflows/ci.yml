@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -35,3 +38,33 @@ jobs:
         run: |
           # We need to make sure the app config points to localhost:4000 for the tests running on host
           pytest --cov=app --cov-report=term-missing --cov-fail-under=75
+
+  publish:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+
+      - name: Build package
+        run: python -m build
+
+      - name: Publish to GitHub Packages
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          repository-url: https://pypi.pkg.github.com/${{ github.repository_owner }}
